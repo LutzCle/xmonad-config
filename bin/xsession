@@ -5,28 +5,50 @@
 
 
 # Configure PATH so that we can access our scripts below
-PATH=$PATH:~/.cabal/bin:~/.xmonad/bin
+PATH="$PATH:~/.cabal/bin:~/.xmonad/bin"
+export PATH
+
+# Set QT5 plattform theme (to change, run qt5ct)
+export QT_QPA_PLATFORMTHEME="qt5ct"
 
 # Configure X
 xsetroot -cursor_name left_ptr &
 xrdb -merge ~/.Xdefaults &
 
+# Configure keymap (switch with caps lock key)
+setxkbmap -layout ch,ru -variant de_nodeadkeys, -option 'grp:caps_toggle' &
+
 # Start the system tray
 tray &
-
-# Start two terminals
-gnome-terminal &
-gnome-terminal &
-
-# Start a browser
-google-chrome &
-
-# Start screensaver
-# Kill gnome-screensaver if started by default
-killall gnome-screensaver &
-xscreensaver -no-splash &
 
 # Start sound server
 pulseaudio --start &
 
-exec ck-launch-session dbus-launch --sh-syntax --exit-with-session xmonad
+# Start gnome-keyring
+eval $(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh)
+export SSH_AUTH_SOCK
+
+# Start Network Manager applet
+nm-applet &
+
+# Start redshift to reduce eyestrain at night
+redshift-gtk &
+
+# Start terminals
+#gnome-terminal &
+#konsole &
+urxvt &
+
+# Start a browser
+#google-chrome &
+firefox &
+
+# Start mail client
+thunderbird &
+
+# Start screensaver
+# Kill gnome-screensaver if started by default
+#killall gnome-screensaver &
+xscreensaver -no-splash &
+
+#exec ck-launch-session dbus-launch --sh-syntax --exit-with-session xmonad

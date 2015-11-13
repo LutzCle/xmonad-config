@@ -14,10 +14,14 @@ import XMonad.Layout.NoBorders
 import XMonad.Layout.Spiral
 import XMonad.Layout.Tabbed
 import XMonad.Layout.ThreeColumns
+import XMonad.Layout.Grid
+import XMonad.Layout.IM
 import XMonad.Util.Run(spawnPipe)
 import XMonad.Util.EZConfig(additionalKeys)
+import Data.Ratio ((%))
 import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
+import qualified XMonad.Layout.IndependentScreens as LIS
 
 
 ------------------------------------------------------------------------
@@ -25,14 +29,14 @@ import qualified Data.Map        as M
 -- The preferred terminal program, which is used in a binding below and by
 -- certain contrib modules.
 --
-myTerminal = "/usr/bin/gnome-terminal"
+myTerminal = "/usr/bin/konsole"
 
 
 ------------------------------------------------------------------------
 -- Workspaces
 -- The default number of workspaces (virtual screens) and their names.
 --
-myWorkspaces = ["1:term","2:web","3:code","4:vm","5:media"] ++ map show [6..9]
+myWorkspaces = ["1:mail","2:web","3:code","4:vm","5:im"] ++ map show [6..9]
 
 
 ------------------------------------------------------------------------
@@ -50,8 +54,12 @@ myWorkspaces = ["1:term","2:web","3:code","4:vm","5:media"] ++ map show [6..9]
 -- 'className' and 'resource' are used below.
 --
 myManageHook = composeAll
-    [ className =? "Chromium"       --> doShift "2:web"
+    [ className =? "Thunderbird"    --> doShift "1:mail"
+    , className =? "Chromium"       --> doShift "2:web"
     , className =? "Google-chrome"  --> doShift "2:web"
+    , className =? "Firefox"        --> doShift "2:web"
+    , className =? "konsole"        --> doShift "3:code"
+    , className =? "urxvt"          --> doShift "3:code"
     , resource  =? "desktop_window" --> doIgnore
     , className =? "Galculator"     --> doFloat
     , className =? "Steam"          --> doFloat
@@ -59,7 +67,8 @@ myManageHook = composeAll
     , resource  =? "gpicview"       --> doFloat
     , className =? "MPlayer"        --> doFloat
     , className =? "VirtualBox"     --> doShift "4:vm"
-    , className =? "Xchat"          --> doShift "5:media"
+    , className =? "skype"          --> doShift "5:im"
+    , className =? "Xchat"          --> doShift "5:im"
     , className =? "stalonetray"    --> doIgnore
     , isFullscreen --> (doF W.focusDown <+> doFullFloat)]
 
@@ -75,12 +84,15 @@ myManageHook = composeAll
 -- which denotes layout choice.
 --
 myLayout = avoidStruts (
-    Tall 1 (3/100) (1/2) |||
-    Mirror (Tall 1 (3/100) (1/2)) |||
     tabbed shrinkText tabConfig |||
+    withIM (1%7) skype Grid |||
+    Mirror (Tall 1 (3/100) (2/3)) |||
+    Tall 1 (3/100) (1/2) |||
     Full |||
-    spiral (6/7)) |||
+    spiral (5/7)
+    ) |||
     noBorders (fullscreenFull Full)
+      where skype = And (ClassName "Skype") (Role "")
 
 
 ------------------------------------------------------------------------
@@ -118,7 +130,7 @@ myBorderWidth = 1
 -- ("right alt"), which does not conflict with emacs keybindings. The
 -- "windows key" is usually mod4Mask.
 --
-myModMask = mod1Mask
+myModMask = mod4Mask
 
 myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   ----------------------------------------------------------------------
@@ -136,7 +148,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   -- Launch dmenu via yeganesh.
   -- Use this to launch programs without a key binding.
   , ((modMask, xK_p),
-     spawn "dmenu-with-yeganesh")
+     spawn "/home/lutzcle/.xmonad/bin/dmenu-with-yeganesh")
 
   -- Take a screenshot in select mode.
   -- After pressing this key binding, click a window, or draw a rectangle with
@@ -153,17 +165,26 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   , ((modMask .|. shiftMask, xK_o),
      spawn "fetchotp -x")
 
+  -- Toggel 2nd VGA monitor off / on
+  , ((modMask, xK_d),
+    do
+     screencount <- LIS.countScreens
+     if screencount > 1
+       then spawn "xrandr --output VGA1 --off --output LVDS1 --primary"
+       else spawn "xrandr --output VGA1 --auto --right-of LVDS1 --output LVDS1 --primary"
+    )
 
+  -- Taken from /usr/include/X11/XF86keysym.h
   -- Mute volume.
-  , ((modMask .|. controlMask, xK_m),
+  , ((0, 0x1008FF12),
      spawn "amixer -q set Master toggle")
 
   -- Decrease volume.
-  , ((modMask .|. controlMask, xK_j),
+  , ((0, 0x1008FF11),
      spawn "amixer -q set Master 10%-")
 
   -- Increase volume.
-  , ((modMask .|. controlMask, xK_k),
+  , ((0, 0x1008FF13),
      spawn "amixer -q set Master 10%+")
 
   -- Audio previous.
@@ -328,7 +349,7 @@ myStartupHook = return ()
 -- Run xmonad with all the defaults we set up.
 --
 main = do
-  xmproc <- spawnPipe "xmobar ~/.xmonad/xmobar.hs"
+  xmproc <- spawnPipe "/usr/bin/xmobar /home/lutzcle/.xmonad/xmobar.hs"
   xmonad $ defaults {
       logHook = dynamicLogWithPP $ xmobarPP {
             ppOutput = hPutStrLn xmproc
