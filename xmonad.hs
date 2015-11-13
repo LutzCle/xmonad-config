@@ -31,6 +31,20 @@ import qualified XMonad.Layout.IndependentScreens as LIS
 --
 myTerminal = "/usr/bin/konsole"
 
+-- The command to lock the screen or show the screensaver.
+myScreensaver = "/usr/bin/xscreensaver-command -lock"
+
+-- The command to take a selective screenshot, where you select
+-- what you'd like to capture on the screen.
+mySelectScreenshot = "select-screenshot"
+
+-- The command to take a fullscreen screenshot.
+myScreenshot = "screenshot"
+
+-- The command to use as a launcher, to launch commands that don't have
+-- preset keybindings.
+myLauncher = "$(yeganesh -x -- -fn '-*-terminus-*-r-normal-*-*-120-*-*-*-*-iso8859-*' -nb '#000000' -nf '#FFFFFF' -sb '#7C7C7C' -sf '#CEFFAC')"
+
 
 ------------------------------------------------------------------------
 -- Workspaces
@@ -141,25 +155,22 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   [ ((modMask .|. shiftMask, xK_Return),
      spawn $ XMonad.terminal conf)
 
-  -- Lock the screen using xscreensaver.
+  -- Lock the screen using command specified by myScreensaver.
   , ((modMask .|. controlMask, xK_l),
-     spawn "xscreensaver-command -lock")
+     spawn myScreensaver)
 
-  -- Launch dmenu via yeganesh.
+  -- Spawn the launcher using command specified by myLauncher.
   -- Use this to launch programs without a key binding.
   , ((modMask, xK_p),
-     spawn "/home/lutzcle/.xmonad/bin/dmenu-with-yeganesh")
+     spawn myLauncher)
 
-  -- Take a screenshot in select mode.
-  -- After pressing this key binding, click a window, or draw a rectangle with
-  -- the mouse.
+  -- Take a selective screenshot using the command specified by mySelectScreenshot.
   , ((modMask .|. shiftMask, xK_p),
-     spawn "select-screenshot")
+     spawn mySelectScreenshot)
 
-  -- Take full screenshot in multi-head mode.
-  -- That is, take a screenshot of everything you see.
+  -- Take a full screenshot using the command specified by myScreenshot.
   , ((modMask .|. controlMask .|. shiftMask, xK_p),
-     spawn "screenshot")
+     spawn "myScreenshot")
 
   -- Fetch a single use password.
   , ((modMask .|. shiftMask, xK_o),

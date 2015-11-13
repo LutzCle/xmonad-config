@@ -18,6 +18,9 @@ xrdb -merge ~/.Xdefaults &
 # Configure keymap (switch with caps lock key)
 setxkbmap -layout ch,ru -variant de_nodeadkeys, -option 'grp:caps_toggle' &
 
+# Start a window compositor. This ensures Google Chrome paints correctly.
+xcompmgr -n &
+
 # Start the system tray
 tray &
 
