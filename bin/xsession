@@ -13,7 +13,6 @@ export QT_QPA_PLATFORMTHEME="qt5ct"
 
 # Configure X
 xsetroot -cursor_name left_ptr &
-xrdb -merge ~/.Xdefaults &
 
 # Configure keymap (switch with caps lock key)
 setxkbmap -layout ch,ru -variant de_nodeadkeys, -option 'grp:caps_toggle' &
@@ -40,7 +39,7 @@ redshift-gtk &
 # Start terminals
 #gnome-terminal &
 #konsole &
-urxvt &
+#urxvt &
 
 # Start a browser
 #google-chrome &
