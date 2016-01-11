@@ -4,10 +4,10 @@
 
 -- This is setup for dual 1920x1080 monitors, with the right monitor as primary
 Config {
-    font = "xft:Fixed-8",
+    font = "xft:Fixed-9",
     bgColor = "#000000",
     fgColor = "#ffffff",
-    position = Static { xpos = 0, ypos = 0, width = 1088, height = 16 },
+    position = TopP 0 192,
     lowerOnStart = True,
     commands = [
         Run Weather "EDDI" ["-t","<tempC>°C <skyCondition>","-L","64","-H","77","-n","#CEFFAC","-h","#FFB6B0","-l","#96CBFE"] 36000,
