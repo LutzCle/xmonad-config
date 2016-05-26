@@ -4,11 +4,12 @@
 
 -- This is setup for dual 1920x1080 monitors, with the right monitor as primary
 Config {
-    font = "xft:Fixed-8",
+    font = "xft:Fixed-9",
     bgColor = "#000000",
     fgColor = "#ffffff",
-    position = Static { xpos = 0, ypos = 0, width = 1088, height = 16 },
-    lowerOnStart = True,
+    position = TopP 0 192,
+    pickBroadest = True,
+    persistent = True,
     commands = [
         Run Weather "EDDI" ["-t","<tempC>°C <skyCondition>","-L","64","-H","77","-n","#CEFFAC","-h","#FFB6B0","-l","#96CBFE"] 36000,
 	Run BatteryP ["BAT0"] ["-t", "Batt: <left>%","-L","20","-H","60","-l","#FFB6B0","-h","#CEFFAC","-n","#FFFFCC","--"] 60,
