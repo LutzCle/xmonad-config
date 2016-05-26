@@ -8,7 +8,6 @@ Config {
     bgColor = "#000000",
     fgColor = "#ffffff",
     position = TopP 0 192,
-    pickBroadest = True,
     persistent = True,
     commands = [
         Run Weather "EDDI" ["-t","<tempC>°C <skyCondition>","-L","64","-H","77","-n","#CEFFAC","-h","#FFB6B0","-l","#96CBFE"] 36000,
