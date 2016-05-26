@@ -3,6 +3,7 @@
 -- http://github.com/vicfryzel/xmonad-config
 
 import System.IO
+import System.Process
 import System.Exit
 import XMonad
 import XMonad.Hooks.DynamicLog
@@ -180,9 +181,14 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
   , ((modMask, xK_d),
     do
      screencount <- LIS.countScreens
-     if screencount > 1
-       then spawn "xrandr --output VGA1 --off --output LVDS1 --primary"
-       else spawn "xrandr --output VGA1 --auto --right-of LVDS1 --output LVDS1 --primary"
+     let
+       xrandrfiltercmd = "xrandr --query | awk '($2 ~ /^connected/) && ($1 !~ /eDP1/) {print $1}'"
+       xrandrenablecmd = "xrandr --output $screenname --off --output eDP1 --primary"
+       xrandrdisablecmd = "xrandr --output $screenname --auto --right-of eDP1 --output eDP1 --primary"
+       in
+       if screencount > 1
+         then spawn ("screenname=$(" ++ xrandrfiltercmd ++ "); " ++ xrandrenablecmd)
+         else spawn ("screenname=$(" ++ xrandrfiltercmd ++ "); " ++ xrandrdisablecmd)
     )
 
   -- Taken from /usr/include/X11/XF86keysym.h
