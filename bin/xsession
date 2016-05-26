@@ -46,7 +46,7 @@ redshift-gtk &
 firefox &
 
 # Start mail client
-thunderbird &
+evolution &
 
 # Start screensaver
 # Kill gnome-screensaver if started by default
