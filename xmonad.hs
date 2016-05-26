@@ -29,7 +29,7 @@ import qualified XMonad.Layout.IndependentScreens as LIS
 -- The preferred terminal program, which is used in a binding below and by
 -- certain contrib modules.
 --
-myTerminal = "/usr/bin/konsole"
+myTerminal = "/usr/bin/gnome-terminal"
 
 -- The command to lock the screen or show the screensaver.
 myScreensaver = "/usr/bin/xscreensaver-command -lock"
