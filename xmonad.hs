@@ -30,10 +30,10 @@ import qualified XMonad.Layout.IndependentScreens as LIS
 -- The preferred terminal program, which is used in a binding below and by
 -- certain contrib modules.
 --
-myTerminal = "/usr/bin/gnome-terminal"
+myTerminal = "gnome-terminal"
 
 -- The command to lock the screen or show the screensaver.
-myScreensaver = "/usr/bin/xscreensaver-command -lock"
+myScreensaver = "xscreensaver-command -lock"
 
 -- The command to take a selective screenshot, where you select
 -- what you'd like to capture on the screen.
@@ -183,7 +183,7 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
      screencount <- LIS.countScreens
      let
        xrandrfiltercmd = "xrandr --query | awk '($2 ~ /^connected/) && ($1 !~ /eDP1/) {print $1}'"
-       xrandrenablecmd = "xrandr --output $screenname --off --output eDP1 --primary"
+       xrandrenablecmd = "xrandr --output $screenname --off --output eDP-1 --primary"
        xrandrdisablecmd = "xrandr --output $screenname --auto --right-of eDP1 --output eDP1 --primary"
        in
        if screencount > 1
@@ -366,15 +366,16 @@ myStartupHook = return ()
 -- Run xmonad with all the defaults we set up.
 --
 main = do
-  xmproc <- spawnPipe "/usr/bin/xmobar /home/lutzcle/.xmonad/xmobar.hs"
+  xmproc <- spawnPipe "xmobar /home/lutzcle/.xmonad/xmobar.hs"
   xmonad $ defaults {
-      logHook = dynamicLogWithPP $ xmobarPP {
+      manageHook = manageDocks <+> myManageHook
+      , handleEventHook    = handleEventHook defaultConfig <+> docksEventHook
+      , logHook = dynamicLogWithPP $ xmobarPP {
             ppOutput = hPutStrLn xmproc
           , ppTitle = xmobarColor xmobarTitleColor "" . shorten 100
           , ppCurrent = xmobarColor xmobarCurrentWorkspaceColor ""
           , ppSep = "   "
       }
-      , manageHook = manageDocks <+> myManageHook
       , startupHook = setWMName "LG3D"
   }
 

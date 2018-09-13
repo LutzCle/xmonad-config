@@ -1,8 +1,4 @@
 #!/bin/sh
-# Script to configure X, start common apps, and start xmonad.
-# Author: Vic Fryzel
-# http://github.com/vicfryzel/xmonad-config
-
 
 # Configure PATH so that we can access our scripts below
 PATH="$PATH:~/.cabal/bin:~/.xmonad/bin"
@@ -11,20 +7,33 @@ export PATH
 # Set QT5 plattform theme (to change, run qt5ct)
 export QT_QPA_PLATFORMTHEME="qt5ct"
 
+# Configure zx2c4 pass
+export PASSWORD_STORE_DIR="$HOME/personal/passwords"
+export PASSWORD_STORE_GIT="$HOME/personal"
+
 # Configure X
-xsetroot -cursor_name left_ptr &
+xsetroot -solid "#505050" -cursor_name left_ptr &
 
 # Configure keymap (switch with caps lock key)
+if [[ $HOSTNAME == "jake" ]]; then
 setxkbmap -layout ch,ru -variant de_nodeadkeys, -option 'grp:caps_toggle' &
+else
+setxkbmap -layout us,ru -variant altgr-intl, -option 'grp:caps_toggle' &
+fi
 
 # Start a window compositor. This ensures Google Chrome paints correctly.
 xcompmgr -n &
 
 # Start the system tray
-tray &
+stalonetray &
 
 # Start sound server
 pulseaudio --start &
+
+# Start redshift
+if [[ $HOSTNAME == "cuthbert" ]]; then
+redshift-gtk &
+fi
 
 # Start gnome-keyring
 eval $(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh)
@@ -33,24 +42,10 @@ export SSH_AUTH_SOCK
 # Start Network Manager applet
 nm-applet &
 
-# Start redshift to reduce eyestrain at night
-redshift-gtk &
-
-# Start terminals
-#gnome-terminal &
-#konsole &
-#urxvt &
-
-# Start a browser
-#google-chrome &
-firefox &
-
-# Start mail client
-evolution &
-
 # Start screensaver
-# Kill gnome-screensaver if started by default
-#killall gnome-screensaver &
 xscreensaver -no-splash &
 
-#exec ck-launch-session dbus-launch --sh-syntax --exit-with-session xmonad
+# Launch xmonad on NixOS
+if [[ $HOSTNAME == "oy" || $HOSTNAME == "jake" ]]; then
+exec xmonad
+fi
